@@ -10,14 +10,7 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import os
 
-# ✅ STEP 1: Mount Google Drive
-from google.colab import drive
-drive.mount('/content/drive', force_remount=True)
 
-# ✅ STEP 2: Update Dataset Path
-root_dir = "/content/drive/MyDrive/IR_Spectro/data/"
-
-# ✅ STEP 3: Update CNN Model (Supports More Functional Groups)
 class IR_CNN(nn.Module):
     def __init__(self, num_classes):
         super(IR_CNN, self).__init__()
@@ -37,7 +30,7 @@ class IR_CNN(nn.Module):
         x = self.fc2(x)
         return x
 
-# ✅ STEP 4: Load Data (Automatically Detects Four Classes)
+
 def load_data(root_dir):
     transform = transforms.Compose([
         transforms.Grayscale(num_output_channels=1),
@@ -50,17 +43,16 @@ def load_data(root_dir):
         transforms.Normalize((0.3,), (0.7,))
     ])
 
-    # ✅ Debugging: Check if dataset exists
-    if not os.path.exists(root_dir + "train/"):
-        raise FileNotFoundError(f"❌ Dataset not found in {root_dir}. Check your Google Drive path!")
+ 
+   
 
-    # ✅ Load training data
+ 
     train_dataset = datasets.ImageFolder(root=root_dir + "train/", transform=transform)
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
     return train_loader, train_dataset
 
-# ✅ STEP 5: Train Model
+
 def train_model(model, train_loader):
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0005)
@@ -79,7 +71,7 @@ def train_model(model, train_loader):
 
     torch.save(model.state_dict(), "/content/drive/MyDrive/ir_model.pth")  # ✅ Save model
 
-# ✅ STEP 6: Evaluate Model
+
 def evaluate_model(model, test_loader, class_names):
     model.eval()
     y_true, y_pred = [], []
@@ -99,7 +91,7 @@ def evaluate_model(model, test_loader, class_names):
     plt.title("Confusion Matrix")
     plt.show()
 
-# ✅ STEP 7: Run Training & Evaluation
+
 train_loader, train_dataset = load_data(root_dir)
 num_classes = len(train_dataset.classes)
 
@@ -107,7 +99,7 @@ num_classes = len(train_dataset.classes)
 model = IR_CNN(num_classes)
 train_model(model, train_loader)
 
-# ✅ Load Test Data
+
 test_dataset = datasets.ImageFolder(root=root_dir + "test/", transform=transforms.Compose([
     transforms.Grayscale(num_output_channels=1),
     transforms.Resize((128, 128)),
